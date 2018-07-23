@@ -1,0 +1,42 @@
+# docker build -t jenkins -f dockerfile.jenkins .
+# docker run --rm -v /sys/fs/cgroup:/sys/fs/cgroup:ro -p 8081:8080 -i -t jenkins
+# docker exec -it <container name> /bin/bash
+
+FROM centos:7
+
+MAINTAINER aws1d1 "aws1d1@hotmail.com"
+
+# ENV container docker
+
+RUN yum -y update
+RUN yum -y install https://centos7.iuscommunity.org/ius-release.rpm
+RUN yum install -y initscripts
+
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
+systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+RUN yum -y yum clean all;
+
+# We copy just the req.python-flask.txt first to leverage Docker cache
+# COPY ./req.python-flask.txt /app/req.python-flask.txt
+COPY ./jenkins-2.89.3-1.1.noarch.rpm /tmp
+COPY ./jdk-8u111-linux-x64.rpm /tmp
+
+# WORKDIR /app
+# RUN pip install -r req.python-flask.txt
+# COPY . /app
+
+# EXPOSE 5002
+EXPOSE 8080
+
+# ENTRYPOINT [ "python" ]
+# CMD [ "server.py" ]
+VOLUME [ "/sys/fs/cgroup", "/tmp", "/run" ]
+CMD ["/usr/sbin/init"]
