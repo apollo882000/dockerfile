@@ -22,7 +22,7 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
-RUN yum -y yum clean all;
+RUN yum -y clean all;
 
 # We copy just the req.python-flask.txt first to leverage Docker cache
 # COPY ./req.python-flask.txt /app/req.python-flask.txt
@@ -38,5 +38,11 @@ EXPOSE 8080
 
 # ENTRYPOINT [ "python" ]
 # CMD [ "server.py" ]
+#
+# CMD ["rpm -ivh ./tmp/jdk-8u111-linux-x64.rpm"]
+# CMD ["rpm -ivh ./tmp/jenkins-2.89.3-1.1.noarch.rpm"]
 VOLUME [ "/sys/fs/cgroup", "/tmp", "/run" ]
 CMD ["/usr/sbin/init"]
+# CMD ["systemctl daemon-reload"]
+# CMD ["systemctl start jenkins"]
+# CMD ["systemctl status jenkins"]
